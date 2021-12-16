@@ -1,46 +1,14 @@
-# command
+# image
 
-记录 docker 常用命令
+image 是一套轻量级、可运行的独立软件包，用于打包项目所依赖的环境，以及相关资源。
 
 # Index
 
-- 帮助命令
-  - version
-  - info
-  - help
-- 镜像命令
+- 镜像常用命令
   - images
   - search
   - pull
   - rmi
-- 容器命令
-
-# 帮助命令
-
-- docker version: 显示当前 docker 版本；
-- docker info|-i: 显示 docker 的详细信息;
-
-```
-Client:
- Context:    default
- Debug Mode: false
- Plugins:
-  app: Docker App (Docker Inc., v0.9.1-beta3)
-  buildx: Docker Buildx (Docker Inc., v0.7.1-docker)
-  scan: Docker Scan (Docker Inc., v0.12.0)
-
-Server:
-  Containers: 2 // 容器数量
-  Running: 0
-  Paused: 0
-  Stopped: 2
-Images: 1 // 镜像数量
-Server Version: 20.10.12  // docker 版本
-......
-```
-
-- docker help|-h docker 帮助文档
-  - docker [options] COMMAND -h: 指定命令的帮助文档
 
 # 镜像命令
 
@@ -50,7 +18,7 @@ Server Version: 20.10.12  // docker 版本
 
 ```
 // 镜像名称 镜像标签（latest 表示最新版） 镜像 ID 创建时间 镜像大小
-REPOSITORY()    TAG       IMAGE ID       CREATED        SIZE
+REPOSITORY    TAG       IMAGE ID       CREATED        SIZE
 hello-world   latest    feb5d9fea6a5   2 months ago   13.3kB
 ```
 
