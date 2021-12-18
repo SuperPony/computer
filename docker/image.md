@@ -4,15 +4,19 @@ image 是一套轻量级、可运行的独立软件包，用于打包项目所�
 
 # Index
 
-- 镜像常用命令
+- 常用命令
   - images
   - search
   - pull
   - rmi
+  - history
+- 发布
+  - Docker hub
+  - 阿里云
 
 # 镜像命令
 
-- docker images [options]: 查看本地镜像列表；
+- images [options]: 查看本地镜像列表；
   - -a: 列出所有镜像;
   - -q: 仅展示镜像 ID。
 
@@ -22,7 +26,7 @@ REPOSITORY    TAG       IMAGE ID       CREATED        SIZE
 hello-world   latest    feb5d9fea6a5   2 months ago   13.3kB
 ```
 
-- docker search name: 搜索指定名称的镜像；
+- search name: 搜索指定名称的镜像；
 
 ```
 [root@VM-0-5-centos docker]# docker search mysql
@@ -37,8 +41,23 @@ centurylink/mysql                 Image containing mysql. Optimized to be link�
 databack/mysql-backup             Back up mysql databases to... anywhere!         54
 ```
 
-- docker pull name[:tag]: 下载指定镜像;
+- pull IAMGE[:tag]: 下载指定镜像;
 
   - tag 表示指定的版本，默认是 latest（最新）版， 指定的版本必须是仓库中存在的。
 
-- docker rmi name[:tag] | IMAGE ID: 删除指定镜像，批量删除以空格分割。
+- rmi IMAGE[:tag]: 删除指定镜像，批量删除以空格分割；
+
+- history IMAGE: 查看镜像的创建历史；
+
+# 发布
+
+## Docker hub
+
+发布到 docker hub 首先要在 docker hub 上注册账号，url: https://www.docker.com/
+
+1. login -u ACCOUNT: docker 登陆账号；
+2. push IMAGE[:tag]: 推送至个人仓库。
+
+## 阿里云
+
+创建阿里云账号以及开启容器与镜像服务，然后点击仓库内有推送教程。
