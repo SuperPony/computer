@@ -61,6 +61,22 @@ Dockerfile 文件用于构建镜像, 每一条命令都将作为一层记录。
 
 - `VOLUME [ "/data",... ]` 定义匿名数据卷。
 
+- `ONBUILD INSTRUCTION` 延迟构建的命令，声明该命令的 Dockerfile 不会执行该命令，当有其他 Dockerfile 继承该镜像时，则在构建时执行 ONBUILD 中的命令；
+
+```
+# Dockerfile1 假定镜像声明为 test
+
+FROM centos
+
+ONBUILD CMD [ "ls", '-al' ]
+ONBUILD VOLUME [ "/data2" ]
+
+# Dockerfile2 该镜像在构建时，执行 test 镜像中 ONBUILD 命令
+
+FORM test
+
+```
+
 # Guide
 
 ```
@@ -89,6 +105,6 @@ EXPOSE 80 443
 #    LOGPATH="/var/log"
 
 VOLUME [ "/var/lib" ]
-
+172.18.0.3 172.18.0.2
 WORKDIR /home
 ```
