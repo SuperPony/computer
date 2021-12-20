@@ -50,19 +50,15 @@ services:
     # 声明运行时的容器名，默认是 docker-compose.yml所在目录名_servicename_num, num 代表编号，在集群中有意义。
     container_name: "my-nginx"
 
-    # 声明构建顺序，该服务构建晚于 db，nginx，以确保对于构建顺序有严格要求的应用能够正确构建
+    # 声明构建顺序，该服务构建晚于 db；此配置用于确保对于构建顺序有严格要求的应用能够正确构建
     depends_on:
       - db
-      - nginx
 
     # 该命令声明服务运行时加入指定网络
     # 默认情况下在启动编排时，会自动创建一个网络，将服务的所有容器全部连接该网络
     networks:
       - my-network
       - web-network
-
-    # 构建服务时，运行的命令
-    # command: [ "ls", ""-all" ]
 
   db:
     build:
@@ -80,10 +76,12 @@ services:
     volumes:
       - "mysql-config:/etc/mysql"
       - "mysql-data:/var/lib/mysql"
-
     # 声明容器暴露的端口
     # expose:
     #   - "80"
+
+    # 服务运行时执行的命令
+    command: "--character-set-server=utf8"
 
 
 # 其他指令

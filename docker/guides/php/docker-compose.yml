@@ -2,9 +2,7 @@ version: '3.7'
 
 services:
   mysql:
-    build:
-      context: .
-      dockerfile: Dockerfile-mysql
+    image: mysql:5.7
     ports:
       - "33066:3306"
     networks:
@@ -18,9 +16,7 @@ services:
     command: "--character-set-server=utf8"
 
   redis:
-    build:
-      context: .
-      dockerfile: Dockerfile-redis
+    image: redis:6.2
     ports:
       - "16379:6379"
     networks:
@@ -30,9 +26,7 @@ services:
       - "blog-redis-log:/var/log/redis"
 
   nginx:
-    build:
-      context: .
-      dockerfile: Dockerfile-nginx
+    image: nginx:1.21.4
     networks:
       - network-blog
     volumes:
@@ -40,9 +34,7 @@ services:
       - "blog-nginx-log:/var/log/nginx"
 
   php:
-    build:
-      context: .
-      dockerfile: Dockerfile-php
+    build: .
     ports:
       - "9000:9000"
     networks:
@@ -68,5 +60,4 @@ volumes:
   blog-php-log: null
 
 networks:
-  network-blog:
-    driver: bridge
+  network-blog: null
