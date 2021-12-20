@@ -22,4 +22,80 @@ Docker-Compose 是一种容器编排技术，用于一次性对多个镜像进�
 
 # docker-compose.yml
 
-docker-compose.yml 用于声明编排该如何进行；
+docker-compose.yml 用于声明编排该如何进行；此处列举常用的配置项，具体配置项参考官方 https://docs.docker.com/compose/compose-file/compose-file-v3。
+
+docker-compose.yml 主要分为三大块
+1. version: 指 docker-compose 构建所依赖的版本;
+2. services: services 代表需要构建的服务镜像；
+3. other: other 通常代表一些其他的配置，通常是辅助 services，例如创建 services 需要的自定义网络、数据卷等。
+
+```
+# 构建基于的 docker-compose 版本
+version: "3.7"
+
+# 构建指令
+services:
+  # 服务名称
+  nginx:
+    # 该服务所基于的镜像 image: IMAGE[:tag]
+    image: nginx
+    # 对外暴露的端口
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "nginx-config:/etc/nginx"
+
+    # 声明运行时的容器名，默认是 container_servicename_num, num 代表编号，在集群中有意义。
+    container_name: "my-nginx"
+
+    # 声明构建顺序，该服务构建晚于 db，nginx，以确保对于构建顺序有严格要求的应用能够正确构建
+    depends_on:
+      - db
+      - nginx
+
+    # 加入的网络，该命令进加入指定网络，构建时创建网络需要在其他指令中声明自定义网络
+    # 默认情况下在启动编排时，会自动创建一个网络，将服务的所有容器全部连接该网络
+    networks:
+      - my-network
+
+    # 构建服务时，运行的命令
+    # command: [ "ls", ""-all" ]
+
+  db:
+    build:
+      # Dockerfile 所在目录
+      context: ./dockerfile
+      # 构建服务所基于的 Dockerfile
+      dockerfile: Docker-mysql
+    ports:
+      - "33066:3306"
+    # 设置环境变量
+    environment:
+      - MYSQL_ROOT_PASSWORD=12345678
+    # 数据卷挂载，挂载模式与容器挂载数据卷一致
+    # 此处具名挂载不会自动创建数据卷，需要在全局的 volumes 声明创建
+    volumes:
+      - "mysql-config:/etc/mysql"
+      - "mysql-data:/var/lib/mysql"
+
+    # 声明容器暴露的端口
+    # expose:
+    #   - "80"
+
+
+# 其他指令
+
+# 创建具名数据卷
+volumes:
+  nginx-config:
+  mysql-config:
+  mysql-data:
+
+# 创建自定义网络
+networks:
+  my-network:
+    # 声明网络驱动类型
+    driver: bridge
+    name: my-network
+```
