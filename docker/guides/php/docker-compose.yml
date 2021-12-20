@@ -1,0 +1,72 @@
+version: '3.7'
+
+services:
+  mysql:
+    build:
+      context: .
+      dockerfile: Dockerfile-mysql
+    ports:
+      - "33066:3306"
+    networks:
+      - network-blog
+    volumes:
+      - "blog-mysql-data:/var/lib/mysql"
+      - "blog-mysql-conf:/etc/mysql"
+      - "blog-mysql-log:/var/log"
+    environment:
+      - MYSQL_ROOT_PASSWORD=B0RItAFBBIpzboP9
+    command: "--character-set-server=utf8"
+
+  redis:
+    build:
+      context: .
+      dockerfile: Dockerfile-redis
+    ports:
+      - "16379:6379"
+    networks:
+      - network-blog
+    volumes:
+      - "blog-redis-conf:/etc/redis"
+      - "blog-redis-log:/var/log/redis"
+
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile-nginx
+    networks:
+      - network-blog
+    volumes:
+      - "blog-nginx-conf:/etc/nginx"
+      - "blog-nginx-log:/var/log/nginx"
+
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile-php
+    ports:
+      - "9000:9000"
+    networks:
+      - network-blog
+    volumes:
+      - "blog-php-log:/var/log/php-fpm"
+    depends_on:
+      - nginx
+      - redis
+      - mysql
+
+volumes:
+  blog-mysql-data: null
+  blog-mysql-conf: null
+  blog-mysql-log: null
+
+  blog-redis-conf: null
+  blog-redis-log: null
+
+  blog-nginx-conf: null
+  blog-nginx-log: null
+
+  blog-php-log: null
+
+networks:
+  network-blog:
+    driver: bridge
