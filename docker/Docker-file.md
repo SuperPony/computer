@@ -105,6 +105,6 @@ EXPOSE 80 443
 #    LOGPATH="/var/log"
 
 VOLUME [ "/var/lib" ]
-172.18.0.3 172.18.0.2
+
 WORKDIR /home
 ```
