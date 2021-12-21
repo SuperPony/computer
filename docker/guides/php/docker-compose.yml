@@ -14,7 +14,7 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=B0RItAFBBIpzboP9
     command: "--character-set-server=utf8"
-    container_name: blog-msyql
+    container_name: blog-mysql
 
   redis:
     image: redis:6.2
@@ -25,24 +25,33 @@ services:
     volumes:
       - "blog-redis-conf:/etc/redis"
       - "blog-redis-log:/var/log/redis"
-    container_name: blog-nginx
+    container_name: blog-redis
 
   nginx:
-    image: nginx:1.21.4
+    image: nginx:1.20.2-alpine
     networks:
       - blog
+    ports:
+      - "80:80"
+      - "443:443"
 
     volumes:
       - "blog-nginx-conf:/etc/nginx"
       - "blog-nginx-log:/var/log/nginx"
+      # 数据卷挂载项目在的主机目录
+      - "/app/www:/var/lib/www"
     container_name: blog-nginx
 
   php:
     build: .
     networks:
       - blog
+    ports:
+      - "9000:9000"
     volumes:
       - "blog-php-log:/var/log/php-fpm"
+      # php 的挂载目录必须与 nginx 容器一致，否则无法交由 php 处理
+      - "/app/www:/var/www/html/"
     depends_on:
       - nginx
       - redis
@@ -50,17 +59,25 @@ services:
     container_name: blog-php
 
 volumes:
-  blog-mysql-data: null
-  blog-mysql-conf: null
-  blog-mysql-log: null
+  blog-mysql-data:
+    name: "blog-mysql-data"
+  blog-mysql-conf:
+    name: "blog-mysql-conf"
+  blog-mysql-log:
+    name: "blog-mysql-log"
 
-  blog-redis-conf: null
-  blog-redis-log: null
+  blog-redis-conf:
+    name: "blog-redis-conf"
+  blog-redis-log:
+    name: "blog-redis-log"
 
-  blog-nginx-conf: null
-  blog-nginx-log: null
+  blog-nginx-conf:
+    name: "blog-nginx-conf"
+  blog-nginx-log:
+    name: "blog-nginx-log"
 
-  blog-php-log: null
+  blog-php-log:
+    name: "blog-php-log"
 
 networks:
   blog:
