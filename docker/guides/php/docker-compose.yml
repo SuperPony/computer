@@ -6,7 +6,7 @@ services:
     ports:
       - "33066:3306"
     networks:
-      - network-blog
+      - blog
     volumes:
       - "blog-mysql-data:/var/lib/mysql"
       - "blog-mysql-conf:/etc/mysql"
@@ -14,37 +14,40 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=B0RItAFBBIpzboP9
     command: "--character-set-server=utf8"
+    container_name: blog-msyql
 
   redis:
     image: redis:6.2
     ports:
       - "16379:6379"
     networks:
-      - network-blog
+      - blog
     volumes:
       - "blog-redis-conf:/etc/redis"
       - "blog-redis-log:/var/log/redis"
+    container_name: blog-nginx
 
   nginx:
     image: nginx:1.21.4
     networks:
-      - network-blog
+      - blog
+
     volumes:
       - "blog-nginx-conf:/etc/nginx"
       - "blog-nginx-log:/var/log/nginx"
+    container_name: blog-nginx
 
   php:
     build: .
-    ports:
-      - "9000:9000"
     networks:
-      - network-blog
+      - blog
     volumes:
       - "blog-php-log:/var/log/php-fpm"
     depends_on:
       - nginx
       - redis
       - mysql
+    container_name: blog-php
 
 volumes:
   blog-mysql-data: null
@@ -60,4 +63,5 @@ volumes:
   blog-php-log: null
 
 networks:
-  network-blog: null
+  blog:
+    name: blog
