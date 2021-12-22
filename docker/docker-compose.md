@@ -6,9 +6,8 @@ Docker-Compose 是一种容器编排技术，用于一次性对多个镜像进�
 
 - 安装
   - 删除
-- docker-compose.yml
-- 命令
 - 备注
+- docker-compose.yml
 
 # 安装
 
@@ -19,6 +18,14 @@ Docker-Compose 是一种容器编排技术，用于一次性对多个镜像进�
 ## 删除
 
 `$ sudo rm /usr/local/bin/docker-compose`.
+
+# 备注
+
+- docker-compose 挂载目录数据卷流程：
+  1. 启动镜像阶段会执行一次文件挂载
+  2. 如果宿主机不存在该目录，会新建空的文件夹
+  3. 然后将宿主机目录的内容覆盖容器内的内容
+  - 该流程导致第一次运行时容器内对应的挂载目录全部清空
 
 # docker-compose.yml
 
