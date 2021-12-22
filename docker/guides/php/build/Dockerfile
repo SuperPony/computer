@@ -1,8 +1,5 @@
 FROM php:7.4-fpm-alpine
 
-LABEL Author ="SupeProny" \
-    Email="superponyyy@gmail.com"
-
 ENV TZ=Asia/Shanghai
 
 # 设置时区

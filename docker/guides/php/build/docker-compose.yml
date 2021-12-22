@@ -1,0 +1,83 @@
+version: '3.7'
+
+services:
+  mysql:
+    image: mysql:5.7
+    ports:
+      - "33066:3306"
+    networks:
+      - app
+    volumes:
+      - "app-mysql-data:/var/lib/mysql"
+      - "app-mysql-conf:/etc/mysql"
+      - "app-mysql-log:/var/log"
+    environment:
+      - MYSQL_ROOT_PASSWORD=B0RItAFBBIpzboP9
+    command: "--character-set-server=utf8"
+    container_name: app-mysql
+
+  redis:
+    image: redis:6.2
+    ports:
+      - "16379:6379"
+    networks:
+      - app
+    volumes:
+      - "app-redis-conf:/etc/redis"
+      - "app-redis-log:/var/log/redis"
+    container_name: app-redis
+
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile-nginx
+    networks:
+      - app
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "app-nginx-conf:/etc/nginx"
+      - "app-nginx-log:/var/log/nginx"
+      - "../:/usr/share/nginx/html/app"
+    container_name: app-nginx
+
+  php:
+    build: .
+    networks:
+      - app
+    ports:
+      - "9000:9000"
+    volumes:
+      - "app-php-log:/var/log/php-fpm"
+      - "../:/var/www/html/app"
+    depends_on:
+      - nginx
+      - redis
+      - mysql
+    container_name: app-php
+
+volumes:
+  app-mysql-data:
+    name: "app-mysql-data"
+  app-mysql-conf:
+    name: "app-mysql-conf"
+  app-mysql-log:
+    name: "app-mysql-log"
+
+  app-redis-conf:
+    name: "app-redis-conf"
+  app-redis-log:
+    name: "app-redis-log"
+
+  app-nginx-conf:
+    name: "app-nginx-conf"
+  app-nginx-log:
+    name: "app-nginx-log"
+
+  app-php-log:
+    name: "app-php-log"
+
+networks:
+  app:
+    name: app
