@@ -1,0 +1,36 @@
+version: '3.7'
+
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile-nginx
+    networks:
+      - app
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "app-nginx-conf:/etc/nginx"
+      - "app-nginx-log:/var/log/nginx"
+    container_name: app-nginx
+
+  go:
+    build:
+      context: ../
+      dockerfile: ./build/Dockerfile
+    networks:
+      - app
+    ports:
+      - "8000:8000"
+    container_name: app-go
+
+volumes:
+  app-nginx-conf:
+    name: "app-nginx-conf"
+  app-nginx-log:
+    name: "app-nginx-log"
+
+networks:
+  app:
+    name: app

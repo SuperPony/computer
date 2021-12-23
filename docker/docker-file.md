@@ -83,6 +83,11 @@ FORM test
 
 ```
 
+# 备注
+
+- 在 Dockerfile 中有上下文的概念，即对宿主机文件的操作，例如 COPY， ADD 如果是本地文件，则不能超出上下文路径，上下文取决于 Dockerfile 所在的目录；
+  - 通过在指定的目录运行 `$ docker build -f dickerfilepath`的方式来设置构建时所处的上下文环境。
+
 # Guide
 
 ```
@@ -114,7 +119,3 @@ VOLUME [ "/var/lib" ]
 
 WORKDIR /home
 ```
-
-# 备注
-
-- 在 Dockerfile 中有上下文的概念，即对宿主机文件的操作，例如 COPY， ADD 如果是本地文件，则不能超出上下文路径，上下文取决于 Dockerfile 所在的目录；
