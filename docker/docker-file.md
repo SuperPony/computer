@@ -2,7 +2,13 @@
 
 Dockerfile 文件用于构建镜像, 每一条命令都将作为一层记录。
 
-# 常用命令
+# Index
+
+- 常用指令
+- Guide
+- 备注
+
+# 常用指令
 
 - `FORM IMAGE[:tag]` 该镜像所基于的镜像;
 - `LABEL key="val"` 自定义标签，通常存放一些关于镜像的信息；
@@ -46,7 +52,7 @@ Dockerfile 文件用于构建镜像, 每一条命令都将作为一层记录。
   - `EXPOSE 7000-8000`: 暴露范围端口;
   - `EXPOSE 80 443`: 暴露指定端口.
 
-- `WORKDIR /the/workdir/path`: 设置进入容器后的工作目录；
+- `WORKDIR /the/workdir/path`: 设置容器的工作目录
 
 - `ENV key="val" key2="val2"...`: 设置容器环境变量
 
@@ -76,6 +82,11 @@ ONBUILD VOLUME [ "/data2" ]
 FORM test
 
 ```
+
+# 备注
+
+- 在 Dockerfile 中有上下文的概念，即对宿主机文件的操作，例如 COPY， ADD 如果是本地文件，则不能超出上下文路径，上下文取决于 Dockerfile 所在的目录；
+  - 通过在指定的目录运行 `$ docker build -f dickerfilepath`的方式来设置构建时所处的上下文环境。
 
 # Guide
 

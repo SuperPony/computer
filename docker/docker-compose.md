@@ -54,7 +54,7 @@ services:
     volumes:
       - "nginx-config: /etc/nginx"
 
-    # 声明运行时的容器名，默认是 docker-compose.yml所在目录名_servicename_num, num 代表编号，在集群中有意义。
+    # 声明运行时的容器名，默认命名格式为 docker-compose.yml所在目录名_nginx_num, num 代表编号，在集群中有意义。
     container_name: "my-nginx"
 
     # 声明构建顺序，该服务构建晚于 db；此配置用于确保对于构建顺序有严格要求的应用能够正确构建
@@ -69,10 +69,13 @@ services:
 
   db:
     build:
+      # 设置构建时所处的上下文
+      context: ./
       # Dockerfile 所在目录
-      context: ./dockerfile
-      # 构建服务所基于的 Dockerfile
-      dockerfile: Docker-mysql
+      dockerfile: ./Docker-mysql
+    # image 可以结合 build 指令使用， 当结合时用于设置构建的镜像名称，默认命名格式为 docker-compose.yml所在目录名_db
+    image: app-db:1.0
+
     ports:
       - "33066:3306"
     # 设置环境变量
@@ -96,7 +99,7 @@ services:
 # 创建具名数据卷
 volumes:
   nginx-conf:
-    # 声明数据卷名称，不加该属性则实际生成的名称为 docker-compose.yml所在目录名_nginx-conf
+    # 声明数据卷名称，默认命名格式为 docker-compose.yml所在目录名_nginx-conf
     name: "nginx-conf"
   mysql-conf: null
   mysql-data:
