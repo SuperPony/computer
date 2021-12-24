@@ -2,8 +2,8 @@ package main
 
 import (
 	"io"
-	"net/http"
 	"log"
+	"net/http"
 )
 
 func HelloServer(w http.ResponseWriter, req *http.Request) {
