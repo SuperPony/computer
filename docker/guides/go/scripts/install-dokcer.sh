@@ -31,7 +31,8 @@ EOF
 # 需要配置 docker 默认存储路径使用这个
 # {
 #   "registry-mirrors": ["https://zjwcef2k.mirror.aliyuncs.com"],
-#   "graph": "dockerpath"
+#   "graph": "dockerpath" # on centos
+#   "data-root": "dockerpath" # on ubuntu
 # }
 
 # 安装 docker-compose
