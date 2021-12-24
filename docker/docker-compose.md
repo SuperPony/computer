@@ -73,8 +73,8 @@ services:
       context: ./
       # Dockerfile 所在目录
       dockerfile: ./Docker-mysql
-      # 设置构建的镜像名称，默认命名格式为 docker-compose.yml所在目录名_db
-      target: app-db
+    # image 可以结合 build 指令使用， 当结合时用于设置构建的镜像名称，默认命名格式为 docker-compose.yml所在目录名_db
+    image: app-db:1.0
 
     ports:
       - "33066:3306"

@@ -5,6 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-nginx
+    image: app-nginx
     networks:
       - app
     ports:
@@ -19,6 +20,7 @@ services:
     build:
       context: ../
       dockerfile: ./build/Dockerfile
+    image: app-go
     networks:
       - app
     ports:
