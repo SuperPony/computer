@@ -37,7 +37,7 @@ func (o *Operator) culate(num1, num2 int) int {
 }
 
 // 策略可以随意更换，而不影响 Operator 的所有实现
-func Example() {
+func Example1() {
 	operator := &Operator{}
 
 	operator.setStrategy(&add{})

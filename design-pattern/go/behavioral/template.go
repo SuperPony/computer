@@ -56,7 +56,7 @@ func (s *Sushi) outfire() {
 	fmt.Println("不用关火")
 }
 
-func Example() {
+func Example2() {
 	doCooke(&Tomatoes{})
 	doCooke(&Sushi{})
 }
