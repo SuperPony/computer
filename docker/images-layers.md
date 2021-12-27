@@ -53,8 +53,7 @@ FROM golang:1.16.12-alpine AS builder
 COPY go.mod .
 COPY go.sum .
 
-RUN go mod download \
-    && go mod tidy
+RUN go mod download
 
 COPY . .
 
