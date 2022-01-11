@@ -12,8 +12,7 @@ WORKDIR /app
 COPY go.mod .
 COPY go.sum .
 
-RUN go mod download \
-    && go mod tidy
+RUN go mod download
 
 # 由于重新构建必然是更新了代码
 # 重新复制代码，进行编译
