@@ -1,0 +1,4 @@
+log/*
+go.sum
+tmp/
+img/
