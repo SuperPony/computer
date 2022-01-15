@@ -79,3 +79,31 @@ func TestGinHandle(t *testing.T) {
 	})
 }
 ```
+
+
+# GoMock
+
+GoMock 是一款用于模拟被访问的外部请求地址的库，GoMock 中有两个重要的类型`*Request`,`*Response`。
+
+安装 GoMock，`$ go get gopkg.in/h2non/gock.v1`;
+
+## 常用方法
+
+- `New(baseurl string)`: 返回 Mock 实例，用于进行 API 的声明；
+- `IsDone()`: 断言是否成功出发所有已经注册的模拟，为真则返回 true；
+- `Off()`: 关闭 gomock 的 http 监听器，并删除所有已经注册的模拟，通常在测试完毕后进行关闭。
+- `*Request`: 用于声明 API 的请求相关条件，例如，URL 地址、请求时必须匹配的 Header 头，Content-Type 等等；
+    - `GET(path string), POST(path string), PUT(path string), DELETE(path string)`: 对应4种 http 请求动作；
+    - `Json(data interface{})`: 设置请求数据；
+    - `MatchHeader(key, value string)`: 设置匹配的头部，在请求时，必须传入该声明的头部；
+    - `MatchType(kind string)`: 设置 Content-Type, kind 对应值如下:
+        - "html": "text/html",
+        - "text": "text/plain",
+        - "json": "application/json",
+        - "xml":  "application/xml",
+        - "form": "multipart/form-data",
+        - "url": "application/x-www-form-urlencoded"
+    - `Reply(code int) *Response`: 设置请求返回的状态码。
+- `*Response`: 用于声明 API 的返回，例如 Header 头，响应状态码，返回数据等;
+    - `SetHeader(key, value string)`: 设置响应的头部；
+    - `Json(data interface{})`: 设置返回的数据；
