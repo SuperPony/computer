@@ -10,6 +10,7 @@ image 是一套轻量级、可运行的独立软件包，用于打包项目所�
   - pull
   - rmi
   - history
+  - build
 - 发布
   - Docker hub
   - 阿里云
@@ -49,6 +50,9 @@ databack/mysql-backup             Back up mysql databases to... anywhere!       
 
 - history IMAGE: 查看镜像的创建历史；
 
+- build dockerFile: 基于 dockerFile 创建镜像， dockerFile 可以用 . 代替，表示 dockerFile 所在的目录。
+  - -t IMAGENAME[:tag]: 指定镜像名称；
+  
 # 发布
 
 ## Docker hub
