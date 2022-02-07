@@ -94,3 +94,154 @@ HTTP 在传输数据时可以按照数据原貌直接传输，但也可以在传
 - 实体（entity）：作为请求或响应的有效载荷数据（补充项）被传输，其内容由实体首部和实体主体组成。
 
 HTTP 报文的主体用于传输请求或响应的实体主体。 通常，报文主体等于实体主体。只有当传输中进行编码操作时，实体主体的内容发生变化，才导致它和报文主体产生差异。
+
+
+# HTTP 报文首部
+
+报文分为两种，请求报文以及响应报文，不同的报文首部有一定的出入。
+
+请求报文
+
+![](./assets/img/shoubu1.jpg)
+
+响应报文
+
+![](./assets/img/shoubu2.jpg)
+
+
+## 首部字段
+
+HTTP 首部字段是构成 HTTP 报文的要素之一，在客户端与服务器之间以 HTTP 协议进行通信的过程中，无论是请求还是响应都会使用首部字段，它能起到传递额外重要信息的作用；使用首部字段是为了给浏览器和服务器提供报文主体大小、所使用的语言、认证信息等内容。
+
+### 首部字段结构
+
+HTTP 首部字段由首部字段名和字段值构成，中间用冒号分割，当字段有多个值时，以逗号分割； `首部字段名: 字段值1, 字段值2`；
+
+注意，当首部字段重复时，这种情况目前在规范内尚未明确，根据浏览器内部处理逻辑的不同，结果可能并不一致，有些浏览器优先处理第一次出现的字段，有些则优先处理最后一次出现的字段。
+
+### 4种 HTTP 首部字段类型
+
+HTTP 首部字段根据实际用途被分为以下 4种类型：
+- 通用首部字段（General Header Fields）：请求报文、响应报文都会使用的首部字段；
+- 请求首部字段（Request Header Fields）：请求报文使用的首部字段，其用处在于补充了请求的附加内容、客户端信息，响应内容相关优先级等信息；
+- 响应首部字段（Response Header Fields）：响应报文使用的首部字段，补充了响应的附近内容，同时也会要求客户端附加额外的内容信息；
+- 实体首部（Entity Header Fields）：针对请求报文和响应报文的实体部分使用的首部。补充了资源内容更新时间等，与实体有关的信息。
+
+### 请求首部字段
+请求报文使用的首部字段，其用处在于补充了请求的附加内容、客户端信息，响应内容相关优先级等信息；
+
+- Accept：该首部字段可通知服务器，用户代理能够处理的媒体类型及媒体类型的相对优先级；可使用 type/subtype 这种形式，一次指定多种媒体类型 `Accept: text/html,application/xhtml+xml,application/xml;`
+  - 文本文件：`text/html, text/plain, text/css ...` 或 `application/xhtml+xml, application/xml ...`;
+  - 图片文件：`image/jpeg, image/gif, image/png ...`;
+  - 视频文件：`video/mpeg, video/quicktime ...`;
+  - 应用程序使用的二进制文件：`application/octet-stream, application/zip ...`。
+  
+- Accept-Charset：通知服务端，客户端支持的字符集及字符集的相对优先顺序；另外，可一次性指定多种字符集。与首部字 段 Accept 相同的是可用权重 q 值来表示相对优先级,`Accept-Charset: iso-8859-5, unicode-1-1;q=0.8`;
+- Accept-Encoding：告知服务器用户代理支持的内容编码及 内容编码的优先级顺序；可一次性指定多种内容编码 `Accept-Encoding: gzip, deflate`;
+  - gzip：由文件压缩程序 gzip（GNU zip）生成的编码格式（RFC1952），采用 Lempel-Ziv 算法（LZ77）及 32 位循环冗余校验（Cyclic Redundancy Check，通称 CRC）；
+  - compress：由 UNIX 文件压缩程序 compress 生成的编码格式，采用 Lempel- Ziv-Welch 算法（LZW）；
+  - deflate：组合使用 zlib 格式（RFC1950）及由 deflate 压缩算法 （RFC1951）生成的编码格式；
+  - identity：不执行压缩或不会变化的默认编码格式；
+  - 采用权重 q 值来表示相对优先级，这点与首部字段 Accept 相同；另外，也可使用星号（*）作为通配符，指定任意的编码格式。
+- Accept-Language：告知服务器用户代理能够处理的自然语言集（指中文或英文等），以及自然语言集的相对优先级。可一次指定多种自然语言集 `Accept-Language: zh-cn,zh;q=0.7,en-us,en;q=0.3`
+  - 和 Accept 首部字段一样，按权重值 q 来表示相对优先级。在上述图 例中，客户端在服务器有中文版资源的情况下，会请求其返回中文版对应的响应，没有中文版时，则请求返回英文版响应。
+- Authorization：首部字段 Authorization 是用来告知服务器，用户的认证信息（证书值）；
+- Expect：客户端使用首部字段 Expect 来告知服务器，期望出现的某种特定行为。因服务器无法理解客户端的期望作出回应而发生错误时，会返回 状态码 417 Expectation Failed `Expect: 100-continue`;
+- Form：告知服务器使用用户代理的用户的电子邮件地址；通常，其使用目的就是为了显示搜索引擎等用户代理的负责人的电子邮件联系方式；使用代理时，应尽可能包含 From 首部字段（但可能会因代理不同，将电子邮件地址记录在 User-Agent 首部字段 内）。
+- Host：告知服务器，请求的资源所处的互联网主机名和端口号。Host 首部字段在 HTTP/1.1 规范内是唯一一个必须被包含在请求内的首部字段[^1]；
+- If-Match： 形如 IF-xxx 这种的请求首部字段，都可以成为条件请求；服务端收到附带条件后，只有判断条件为真，才会执行请求；IF-Match 用于发送某个值用于给服务端进行验证，从而判定是否接收请求；
+- If-Modified-Since：告知服务器若 If- Modified-Since 字段值早于资源的更新时间，则希望能处理该请求；而在指定 If-Modified-Since 字段值的日期时间之后，如果请求的资源都没有过更新，则返回状态码 304 Not Modified 的响应；该字段通常用于确定代理或客户端本地资源的有效性，获取资源的更新日期时间，可通过确认首部字段 Last-Modified 来确定；
+- If-None-Match：与 If-Match 相反；
+- Max-Forwards：通过 TRACE 方法或 OPTIONS 方法，发送包含首部字段 Max- Forwards 的请求时，该字段以十进制整数形式指定可经过的服务器最大数目；服务器在往下一个服务器转发请求之前，Max-Forwards 的 值减 1 后重新赋值。当服务器接收到 Max-Forwards 值为 0 的请求 时，则不再进行转发，而是直接返回响应；简单的说，由于 HTTP 协议进行通信时，可能会中转 N 次才到达目标服务器，该字段设置最大中转次数，每次中转值减1，为0时返回响应 `Max-Forwards: 10`；
+- Proxy-Authorization：与 Authorization 类似，用于声明用户的认证信息，区别在于该字段用于告知代理服务器，用户的认证信息；
+- Range：对于只需获取部分资源的范围请求，包含首部字段 Range 即可告知服 务器资源的指定范围 `Range: bytes=5001-10000`,该示例表示请求获取从第 5001 字节至第 10000 字节的资源，接收到附带 Range 首部字段请求的服务器，会在处理请求之后返回状态码为 206 Partial Content 的响应；无法处理该范围请求时，则会返回状态码 200 OK 的响应及全部资源；
+- Referer：告知服务器请求的原始资源的 URI，通常用于客户端请求的 A 页面自动跳转至 B 页面（告知服务端客户请求的原始 URI 是 A）的场景；
+- User-Agent：该字段会将创建请求的浏览器和用户代理名称等信息传达给服务器 `User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:13.0) ...`。
+
+### 响应首部字段
+响应报文使用的首部字段，补充了响应的附近内容，同时也会要求客户端附加额外的内容信息；
+
+- Accept-Ranges：告知客户端服务器是否能处理范围请求，以指定获取服务器端某个部分的资源；该字段值有两个，可处理范围请求时指定其为 bytes，反之则 指定其为 none；
+- Age：告知客户端，源服务器在多久前创建了响应。字段值的单位为秒；若创建该响应的服务器是缓存服务器，Age 值是指缓存后的响应再次 发起认证到认证完成的时间值。代理创建响应时必须加上首部字段 Age；
+- Location：将响应接收方引导至某个与请求 URI 位置不同的资源，基本上该字段会配合 3XX：Redirection 的响应，提供重定向的 URI，目前几乎所有浏览器在接收到首部包含 Location 的响应后，都会强制性的尝试对重新向资源的访问 `Location: https://www.google.com`;
+- Proxy-Authenticate：把由代理服务器所要求的认证信息发送给客户端 `Proxy-Authenticate: Basic realm="Usagidesign Auth"`;
+- Retry-After：告知客户端因该在多久之后再进行请求，主要配合状态码 503  Service Unavailable 响应，或 3xx Redirect 响应一起使用，字段值可以是具体时间，也可以是创建响应后的秒数；
+- Server：告知客户端当前服务器上安装的 HTTP 服务器应用程序的信息，不单单会标出服务器上的软件应用名称，还有可能包括版本号和安装时启用的可选项 `Server: Apache/2.2.6 (Unix) PHP/5.2.5`;
+- Vary：当代理服务器接收到带有 Vary 首部字段指定获取资源的请求时，如果使用的 Accept-Language 字段的值相同，那么就直接从缓 存返回响应；反之，则需要先从源服务器端获取资源后才能作为响应返回 `Vary: Accept-Language`；
+- WWW-Authenticate：告知客户端适用于访问请求 URI 所指定资源的认证方案（Basic 或是 Digest 等等）和带参数提示的质询（challenge）；状态码 401 Unauthorized 的响应中， 肯定带有首部字段 WWW-Authenticate； `WWW-Authenticate: Basic realm="Usagidesign Auth"`;
+- 
+### HTTP/1.1 首部字段速查表
+
+通用首部字段
+
+| 首部字段名             | 说明            |
+|-------------------|---------------|
+| Cache-Control     | 控制缓存的行为       |
+| Connection        | 逐跳首部、连接的管理    |
+| Date              | 创建报文的日期时间     |
+| Pragma            | 报文指令          |
+| Trailer           | 报文末端的首部一览     |
+| Transfer-Encoding | 指定报文主体的传输编码方式 |
+| Upgrade           | 升级为其他协议       |
+| Via               | 代理服务器的相关信息    |
+| Warning           | 错误通知          |
+
+请求首部字段
+
+| 首部字段名               | 说明                              |
+|---------------------|---------------------------------|
+| Accept              | 用户代理可处理的媒体类型                    |
+| Accept-Charset      | 优先的字符集                          |
+| Accept-Encoding     | 优先的内容编码                         |
+| Accept-Language     | 优先的语言（自然语言）                     |
+| Authorization       | Web认证信息                         |
+| Expect              | 期待服务器的特定行为                      |
+| From                | 用户的电子邮箱地址                       |
+| Host                | 请求资源所在服务器                       |
+| If-Match            | 比较实体标记（ETag）                    |
+| If-Modified-Since   | 比较资源的更新时间                       |
+| If-None-Match       | 比较实体标记（与 If-Match 相反）           |
+| If-Range            | 资源未更新时发送实体 Byte 的范围请求           |
+| If-Unmodified-Since | 比较资源的更新时间（与If-Modified-Since相反） |
+| Max-Forwards        | 最大传输逐跳数                         |
+| Proxy-Authorization | 代理服务器要求客户端的认证信息                 |
+| Range               | 实体的字节范围请求                       |
+| Referer             | 对请求中 URI 的原始获取方                 |
+| TE                  | 传输编码的优先级                        |
+| User-Agent          | HTTP 客户端程序的信息                   |
+
+响应首部字段
+
+| 首部字段名              | 说明             |
+|--------------------|----------------|
+| Accept-Ranges      | 是否接受字节范围请求     |
+| Age                | 推算资源创建经过时间     |
+| ETag               | 资源的匹配信息        |
+| Location           | 令客户端重定向至指定URI  |
+| Proxy-Authenticate | 代理服务器对客户端的认证信息 |
+| Retry-After        | 对再次发起请求的时机要求   |
+| Server             | HTTP服务器的安装信息   |
+| Vary               | 代理服务器缓存的管理信息   |
+| WWW-Authenticate   | 服务器对客户端的认证信息   |
+
+实体首部字段
+
+| 首部字段名            | 说明             |
+|------------------|----------------|
+| Allow            | 资源可支持的HTTP方法   |
+| Content-Encoding | 实体主体适用的编码方式    |
+| Content-Language | 实体主体的自然语言      |
+| Content-Length   | 实体主体的大小（单位：字节） |
+| Content-Location | 替代对应资源的URI     |
+| Content-MD5      | 实体主体的报文摘要      |
+| Content-Range    | 实体主体的位置范围      |
+| Content-Type     | 实体主体的媒体类型      |
+| Expires          | 实体主体过期的日期时间    |
+| Last-Modified    | 资源的最后修改日期时间    |
+
+非 HTTP/1.1 首部字段
+在 HTTP 协议通信交互中使用到的首部字段，不限于 RFC2616 中定 义的 47 种首部字段；例如常用的 Cookie 相关首部字段使用频率也很高；这些非正式的首部字段统一归纳在 RFC4229 HTTP Header Field Registrations 中。
+
+
+
+[^1]: 首部字段 Host 和以单台服务器分配多个域名的虚拟主机的工作机制有很密切的关联，这是首部字段 Host 必须存在的意义;请求被发送至服务器时，请求中的主机名会用 IP 地址直接替换解决，但如果这时，相同的 IP 地址下部署运行着多个域名，那么服务器就会无法理解究竟是哪个域名对应的请求；因此，就需要使用首部字段 Host 来明确指出请求的主机名。若服务器未设定主机名，那直接发送一个空值即可 `Hots: `。
