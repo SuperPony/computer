@@ -9,6 +9,15 @@
 - Cookie
 - HTTP 报文
 - HTTP 报文首部
+  - 通用首部字段
+  - 请求首部字段
+  - 响应首部字段
+  - 实体首部字段
+  - Cookie 相关首部字段
+  - 其他首部字段
+  - 首部字段速查表
+  - 缓存指令速查表
+  - Warning 首部警告码
 
 
 # HTTP 特点
@@ -70,7 +79,7 @@
 
 Cookie 会根据从服务端发送的响应报文内的一个叫 Set-Cookie 的首部字段信息，通知客户端保存 Cookie。当下次客户端再往服务端发送请求时，客户端会自动在请求报文内加入 Cookie 值。
 
-当服务端发现客户端发送过来的 Cookie 后，会检查究竟是从哪一个客户端发送过来的连接请求，然后对比服务器伤的记录，最后得到之前的状态信息。
+当服务端发现客户端发送过来的 Cookie 后，会检查究竟是从哪一个客户端发送过来的连接请求，然后对比服务器上的记录，最后得到之前的状态信息。
 
 ![](./assets/img/cookie.jpg)
 
@@ -113,13 +122,11 @@ HTTP 报文的主体用于传输请求或响应的实体主体。 通常，报�
 
 HTTP 首部字段是构成 HTTP 报文的要素之一，在客户端与服务器之间以 HTTP 协议进行通信的过程中，无论是请求还是响应都会使用首部字段，它能起到传递额外重要信息的作用；使用首部字段是为了给浏览器和服务器提供报文主体大小、所使用的语言、认证信息等内容。
 
-### 首部字段结构
-
 HTTP 首部字段由首部字段名和字段值构成，中间用冒号分割，当字段有多个值时，以逗号分割； `首部字段名: 字段值1, 字段值2`；
 
 注意，当首部字段重复时，这种情况目前在规范内尚未明确，根据浏览器内部处理逻辑的不同，结果可能并不一致，有些浏览器优先处理第一次出现的字段，有些则优先处理最后一次出现的字段。
 
-### 4种 HTTP 首部字段类型
+## 4种 HTTP 首部字段类型
 
 HTTP 首部字段根据实际用途被分为以下 4种类型：
 - 通用首部字段（General Header Fields）：请求报文、响应报文都会使用的首部字段；
@@ -127,7 +134,24 @@ HTTP 首部字段根据实际用途被分为以下 4种类型：
 - 响应首部字段（Response Header Fields）：响应报文使用的首部字段，补充了响应的附近内容，同时也会要求客户端附加额外的内容信息；
 - 实体首部（Entity Header Fields）：针对请求报文和响应报文的实体部分使用的首部。补充了资源内容更新时间等，与实体有关的信息。
 
-### 请求首部字段
+## 通用首部字段
+请求报文、响应报文都会使用的首部字段。
+
+- Cache-control：通过指定首部字段 Cache-Control 的指令，就能操作缓存服务器缓存的工作机制，其中指令的参数是可选的，多个指令以逗号分割，`Cache-Control: private, max-age=0, no-cache`，`Cache-Control: no-cache`；
+- Connection：该首部具有两个作用；
+  - 控制不再转发给代理的首部字段，`Connection: 不再转发的首部字段名`;
+  - 管理持久连接[^2], `Connection: close`;
+- Date： 表明创建 HTTP 报文的日期和时间， `Date: Tue, 03 Jul 2012 04:40:59 GMT`(规定格式)；
+- Pragma：HTTP/1.1 之前版本的历史遗留字段，仅作为与 HTTP/1.0 的向后兼容而定义，`Pragma: no-cache`,该首部字段属于通用首部字段，但只用在客户端发送的请求中。客户端会要求所有的中间服务器不返回缓存的资源;
+  - 如果所有中间服务器都能以 HTTP/1.1 为基准，则直接使用`Cache-Control: no-cache` 最为理想，但由于中间服务器是不可控的，所以为了兼容考虑，通常会同时使用：`Pragma: no-cache`, `Cache-Control: no-cache`;
+- Trailer：说明在报文主体后记录了哪些首部字段。该首部字段可应用在 HTTP/1.1 版本分块传输编码时；
+- Transfer-Encoding： 规定了传输报文主体时采用的编码方式，注意，HTTP/1.1 的传输编码方式仅对分块传输编码有效；
+- Upgrade：于检测 HTTP 协议及其他协议是否可使用更高的 版本进行通信，其参数值可以用来指定一个完全不同的通信协议， `Upgrade: TLS/1.0, HTTP/1.1`;
+- Via：用于追踪客户端与服务器之间的请求和响应报文的传输路径，报文经过代理或网关时，会先在首部字段 Via 中附加该服务器的信息，然后再进行转发。这个做法和 traceroute 及电子邮件的 Received 首部的工作机制很类似；
+- Warning：Warning 首部是从 HTTP/1.0 的响应首部（Retry-After）演变过来的；该首部通常会告知用户一些与缓存相关的问题的警告；格式`Warning: [警告码][警告的主机:端口号]“[警告内容]”([日期时间])`;
+
+
+## 请求首部字段
 请求报文使用的首部字段，其用处在于补充了请求的附加内容、客户端信息，响应内容相关优先级等信息；
 
 - Accept：该首部字段可通知服务器，用户代理能够处理的媒体类型及媒体类型的相对优先级；可使用 type/subtype 这种形式，一次指定多种媒体类型 `Accept: text/html,application/xhtml+xml,application/xml;`
@@ -137,7 +161,7 @@ HTTP 首部字段根据实际用途被分为以下 4种类型：
   - 应用程序使用的二进制文件：`application/octet-stream, application/zip ...`。
   
 - Accept-Charset：通知服务端，客户端支持的字符集及字符集的相对优先顺序；另外，可一次性指定多种字符集。与首部字 段 Accept 相同的是可用权重 q 值来表示相对优先级,`Accept-Charset: iso-8859-5, unicode-1-1;q=0.8`;
-- Accept-Encoding：告知服务器用户代理支持的内容编码及 内容编码的优先级顺序；可一次性指定多种内容编码 `Accept-Encoding: gzip, deflate`;
+- Accept-Encoding：告知服务器用户代理支持的内容编码及内容编码的优先级顺序；可一次性指定多种内容编码 `Accept-Encoding: gzip, deflate`;
   - gzip：由文件压缩程序 gzip（GNU zip）生成的编码格式（RFC1952），采用 Lempel-Ziv 算法（LZ77）及 32 位循环冗余校验（Cyclic Redundancy Check，通称 CRC）；
   - compress：由 UNIX 文件压缩程序 compress 生成的编码格式，采用 Lempel- Ziv-Welch 算法（LZW）；
   - deflate：组合使用 zlib 格式（RFC1950）及由 deflate 压缩算法 （RFC1951）生成的编码格式；
@@ -158,7 +182,7 @@ HTTP 首部字段根据实际用途被分为以下 4种类型：
 - Referer：告知服务器请求的原始资源的 URI，通常用于客户端请求的 A 页面自动跳转至 B 页面（告知服务端客户请求的原始 URI 是 A）的场景；
 - User-Agent：该字段会将创建请求的浏览器和用户代理名称等信息传达给服务器 `User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:13.0) ...`。
 
-### 响应首部字段
+## 响应首部字段
 响应报文使用的首部字段，补充了响应的附近内容，同时也会要求客户端附加额外的内容信息；
 
 - Accept-Ranges：告知客户端服务器是否能处理范围请求，以指定获取服务器端某个部分的资源；该字段值有两个，可处理范围请求时指定其为 bytes，反之则 指定其为 none；
@@ -168,9 +192,53 @@ HTTP 首部字段根据实际用途被分为以下 4种类型：
 - Retry-After：告知客户端因该在多久之后再进行请求，主要配合状态码 503  Service Unavailable 响应，或 3xx Redirect 响应一起使用，字段值可以是具体时间，也可以是创建响应后的秒数；
 - Server：告知客户端当前服务器上安装的 HTTP 服务器应用程序的信息，不单单会标出服务器上的软件应用名称，还有可能包括版本号和安装时启用的可选项 `Server: Apache/2.2.6 (Unix) PHP/5.2.5`;
 - Vary：当代理服务器接收到带有 Vary 首部字段指定获取资源的请求时，如果使用的 Accept-Language 字段的值相同，那么就直接从缓 存返回响应；反之，则需要先从源服务器端获取资源后才能作为响应返回 `Vary: Accept-Language`；
-- WWW-Authenticate：告知客户端适用于访问请求 URI 所指定资源的认证方案（Basic 或是 Digest 等等）和带参数提示的质询（challenge）；状态码 401 Unauthorized 的响应中， 肯定带有首部字段 WWW-Authenticate； `WWW-Authenticate: Basic realm="Usagidesign Auth"`;
-- 
-### HTTP/1.1 首部字段速查表
+- WWW-Authenticate：告知客户端适用于访问请求 URI 所指定资源的认证方案（Basic 或是 Digest 等等）和带参数提示的质询（challenge）；状态码 401 Unauthorized 的响应中， 肯定带有首部字段 WWW-Authenticate； `WWW-Authenticate: Basic realm="Usagidesign Auth"`。
+
+## 实体首部字段
+
+针对请求报文和响应报文的实体部分使用的首部；补充了资源内容更新时间等，与实体有关的信息。
+
+- Allow：通知客户端能够支持的 Request-URI 指定资源的有所 HTTP 方法；当服务端接收到不支持的 HTTP 方法时，会以状态码 405 Method Not Allowed 作为响应返回, `Allow: GET, HEAD`;
+- Content-Encoding：告知客户端服务端对实体的主体部分采用的内容编码方式，内容编码是指在不丢失实体信息的前提下所进行的压缩（与请求报文中的 Accept-Encoding 一致）, `Content-Encoding: gzip`；
+  - gzip：由文件压缩程序 gzip（GNU zip）生成的编码格式（RFC1952），采用 Lempel-Ziv 算法（LZ77）及 32 位循环冗余校验（Cyclic Redundancy Check，通称 CRC）；
+  - compress：由 UNIX 文件压缩程序 compress 生成的编码格式，采用 Lempel- Ziv-Welch 算法（LZW）；
+  - deflate：组合使用 zlib 格式（RFC1950）及由 deflate 压缩算法 （RFC1951）生成的编码格式；
+  - identity：不执行压缩或不会变化的默认编码格式；
+  - 采用权重 q 值来表示相对优先级，这点与首部字段 Accept 相同；另外，也可使用星号（*）作为通配符，指定任意的编码格式。
+- Content-Language：告知客户端，实体主体使用的自然语言, `Content-Language: zh-CN`;
+- Content-Length： 表明了实体主体部分的大小（单位是字 节）；对实体主体进行内容编码传输时，不能再使用 Content-Length 首部字段；
+- Content-Location：给出与报文主体部分相对应的 URI；和首部字段 Location 不同，Content-Location 表示的是报文主体返回资源对 应的 URI；
+- Content-Type：说明实体主体内对象的媒体类型，和首部字段 Accept 一样，字段值使用 type/subtype 形式复制， `Content-Type: text/html; charset=UTF-8`;
+  - 参数 charset 使用 iso-8859-1 或 euc-jp 等字符集进行赋值。
+- Expires：将资源失效的日期告知客户端。缓存服务器在接收到含有首部字段 Expires 的响应后，会以缓存来应答请求，在 Expires 字段值指定的时间之前，响应的副本会一直被保存；当超过指定的时间后，缓存服务器在请求发送过来时，会转向源服务器请求资源，`Expires: Wed, 04 Jul 2012 08:26:05 GMT`;
+  - 源服务器不希望缓存服务器对资源缓存时，最好在 Expires 字段内写入与首部字段 Date 相同的时间值；
+  - 当首部字段 Cache-Control 有指定 max-age 指令时，比起首部字段 Expires，会优先处理 max-age 指令；
+- Last-Modified：指明资源最终修改的时间。一般来说，这个 值就是 Request-URI 指定资源被修改的时间。但类似使用 CGI 脚本进 行动态数据处理时，该值有可能会变成数据最终修改时的时间, `Last-Modified: Wed, 23 May 2012 09:59:55 GMT`;
+
+## Cookie 相关首部字段
+
+- Set-Cookie：该字段属于响应首部字段，用于告知客户端保存该 Cookie， `Set-Cookie: status=enable; expires=Tue, 05 Jul 2011 07:26:31...`,字段属性如下：
+  - Name=Value： 赋予 Cookie 的名称和值，必填项；
+  - expires=Date：Cookie 有效期，若忽略则默认为浏览器关闭前；
+  - path=PATH： 将服务器上的文件目录作为 Cookie 的适用对象，若忽略则为文档所在目录；
+  - domain=DOMAIN：作为 Cookie 适用对象的域名，若忽略则则默认为创建 Cookie 的服务器的域名；
+  - Secure：仅在 HTTPS 安全通信时才会发送 Cookie；
+  - HttpOnly：加以限制，使 Cookie 不能被 JavaScript 脚本访问。
+- Cookie：该字段用于在请求时携带指定 Cookie，`Cookie: status=enable`。
+
+## 其他首部字段
+HTTP 首部字段是可以自行扩展的。所以在 Web 服务器和浏览器的应 用上，会出现各种非标准的首部字段。下面列举最常用的自定义首部字段：
+- X-Frame-Options：首部字段 X-Frame-Options 属于 HTTP 响应首部，用于控制网站内容在其他 Web 网站的 Frame 标签内的显示问题。其主要目的是为了防止点击劫持（clickjacking）攻击；值有两个：
+  - DENY：拒绝；
+  - SAMEORIGIN：仅在同源域名下的页面匹配时允许。
+- X-XSS-Protection: 首部字段 X-XSS-Protection 属于 HTTP 响应首部，它是针对跨站脚本 攻击（XSS）的一种对策，用于控制浏览器 XSS 防护机制的开关;值有两个：
+  - 0：将 XSS 过滤设置成无效状态； 
+  - 1：将 XSS 过滤设置成有效状态。
+- DNT：首部字段 DNT 属于 HTTP 请求首部，其中 DNT 是 Do Not Track 的简称，意为拒绝个人信息被收集，是表示拒绝被精准广告追踪的一种方法，值有两个：
+  - 0：同意被追踪；
+  - 1：拒绝被追踪。
+
+## HTTP/1.1 首部字段速查表
 
 通用首部字段
 
@@ -240,8 +308,53 @@ HTTP 首部字段根据实际用途被分为以下 4种类型：
 | Last-Modified    | 资源的最后修改日期时间    |
 
 非 HTTP/1.1 首部字段
+
 在 HTTP 协议通信交互中使用到的首部字段，不限于 RFC2616 中定 义的 47 种首部字段；例如常用的 Cookie 相关首部字段使用频率也很高；这些非正式的首部字段统一归纳在 RFC4229 HTTP Header Field Registrations 中。
+
+
+## 缓存指令速查表
+缓存请求指令
+
+| 指令                 | 参数  | 说明             |
+|--------------------|-----|----------------|
+| no-cache           | 无   | 强制向源服务器再次验证    |
+| no-store           | 无   | 不缓存请求或响应的任何内容  |
+| max-age = [秒]      | 必需  | 响应的最大Age值      |
+| max-stale( = [ 秒]) | 可省略 | 接收已过期的响应       |
+| min-fresh = [ 秒]   | 必需  | 期望在指定时间内的响应仍有效 |
+| no-transform       | 无   | 代理不可更改媒体类型     |
+| only-if-cached     | 无   | 从缓存获取资源        |
+| cache-extension    | -   | 新指令标记（token）   |
+
+缓存响应指令
+
+| 指令               | 参数  | 说明                       |
+|------------------|-----|--------------------------|
+| public           | 无   | 可向任意方提供响应的缓存             |
+| private          | 可省略 | 仅向特定用户返回响应               |
+| no-cache         | 可省略 | 缓存前必须先确认其有效性             |
+| no-store         | 无   | 不缓存请求或响应的任何内容            |
+| no-transform     | 无   | 可缓存但必须再向源服务器进行确认         |
+| proxy-revalidate | 无   | 要求中间缓存服务器对缓存的响应有效性再 进行确认 |
+| max-age = [ 秒]   | 必需  | 响应的最大Age值                |
+| s-maxage = [ 秒]  | 必需  | 公共缓存服务器响应的最大Age值         |
+| cache-extension  | -   | 新指令标记（token）             |
+
+## Warning 首部警告码
+
+110 Response is stale（响应已过期） 代理返回已过期的资源 111 Revalidation failed（再验证失败） 代理再验证资源有效性时失败（服务 器无法到达等原因） 112 Disconnection operation（断开连接操 作） 代理与互联网连接被故意切断 113 Heuristic expiration（试探性过期） 响应的使用期超过24小时（有效缓存 的设定时间大于24小时的情况下） 199 Miscellaneous warning（杂项警告） 任意的警告内容 214 Transformation applied（使用了转换） 代理对内容编码或媒体类型等执行了 某些处理时 299 Miscellaneous persistent warning（持久 杂项警告） 任意的警告内容
+
+| 警告码 | 警告内容                                     | 说明                                |
+|-----|------------------------------------------|-----------------------------------|
+| 110 | Response is stale（响应已过期）                 | 代理返回已过期的资源                        |
+| 111 | Revalidation failed（再验证失败）               | 代理再验证资源有效性时失败（服务器无法到达等原因）         |
+| 112 | Disconnection operation（断开连接操作）          | 代理与互联网连接被故意切断                     |
+| 113 | Heuristic expiration（试探性过期）              | 响应的使用期超过24小时（有效缓存的设定时间大于24小时的情况下） |
+| 199 | Miscellaneous warning（杂项警告）              | 任意的警告内容                           |
+| 214 | Transformation applied（使用了转换）            | 代理对内容编码或媒体类型等执行了某些处理时             |
+| 299 | Miscellaneous persistent warning（持久杂项警告） | 任意的警告内容                           |
 
 
 
 [^1]: 首部字段 Host 和以单台服务器分配多个域名的虚拟主机的工作机制有很密切的关联，这是首部字段 Host 必须存在的意义;请求被发送至服务器时，请求中的主机名会用 IP 地址直接替换解决，但如果这时，相同的 IP 地址下部署运行着多个域名，那么服务器就会无法理解究竟是哪个域名对应的请求；因此，就需要使用首部字段 Host 来明确指出请求的主机名。若服务器未设定主机名，那直接发送一个空值即可 `Hots: `。
+[^2]: HTTP/1.1 版本的默认连接都是持久连接。为此，客户端会在持 久连接上连续发送请求。当服务器端想明确断开连接时，则指定 Connection 首部字段的值为 Close；HTTP/1.1 之前的 HTTP 版本的默认连接都是非持久连接。为此，如果想在旧版本的 HTTP 协议上维持持续连接，则需要指定 Connection 首部字段的值为 Keep-Alive。
