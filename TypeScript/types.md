@@ -15,12 +15,13 @@
     - object
         - 可选属性
 - 接口类型
-    - 接口继承
-    - 接口类型和类型别名的区别
 - 联合类型
 - 类型别名
 - 元组
+- 枚举
 - void
+- never
+- any, unknown
 - 类型推论
 - 类型断言
 - 字面量类型
@@ -142,8 +143,8 @@ obj = {
 
 # 接口类型
 
-当一个对象结构被多次使用时，一般使用接口（interface） 来描述对象结构，以达到复用和简化书写的目的; 声明接口使用关键字 `interface`。
-
+当一个对象结构被多次使用时，一般使用接口（interface） 来描述对象结构，以达到复用和简化书写的目的; 声明接口使用关键字 `interface`。 接口类型与类型别名的区别在于，接口可以声明多次，表示合并； 接口可以用于被类继承。
+具体细节看 oop.md
 ```typescript
 interface MyObj {
     name: string,
@@ -205,16 +206,40 @@ let p: People = {
         console.log(this.name, this.age);
     }
 };
+
+type myType = string | number
+type myType2 = "A" | "B"
 ```
 
 # 元组
 
-元组是一种固定长度的数组类型；
+元组是一种固定长度的数组类型，性能要优于数组。
 `let param:[number, number | string] = [22, "jack"];`
+
+# 枚举
+
+```typescript
+enum Sex {
+    Man,
+    Woman,
+}
+
+type People = {
+    name: string,
+    age: number,
+    sex: Sex
+}
+
+let human: People = {
+    name: "jack",
+    age: 27,
+    sex: Sex.Man
+}
+```
 
 # void 类型
 
-如果函数没有返回值，则返回 void 类型; 默认情况下，不声明返回类型且不`return`时为 void。
+如果函数没有返回值，则返回 void 类型表示空值; 默认情况下，不声明返回类型且不`return`时为 void。
 
 ```typescript
 function print(): void {
@@ -225,6 +250,38 @@ function print(): void {
 function print2() {
     console.log("void type");
 }
+```
+
+# never 类型
+
+never 类型用于函数返回值，表示永远不返回任何值，连 undefined 都不返回，在抛出错误的函数中会用到该类型。
+
+# any, unknown 类型
+
+- any 类型表示任意类型，使用该类型的变量， TS 会跳过类型检查，实际开发中原则上不去使用该类型。
+- unknown 类型是安全的 any 类型，该类型变量可以赋予任意值，但是变量赋予其他变量时，则报错（与 any 的区别）。
+
+```typescript
+let k: unknown = "jack"
+// 无法将 unknown 类型赋予其他类型变量，即便实际类型相同。
+// let s:string = k
+
+// 通过类型断言方式可以使 unknown 类型赋予其他类型变量
+let s = k as string
+k = 123
+
+// 通过 typeof 进行类型判断也可以实现将 unknown 类型赋予其他类型变量
+function f(param: unknown) {
+    let s: string
+    if (typeof param == "string") {
+        s = param
+    }
+}
+
+
+// any 类型可以赋予任意类型,规避掉 ts 的类型检查
+let a: any = "jack"
+let n: number = a
 ```
 
 # 类型推论
